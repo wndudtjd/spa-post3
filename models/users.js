@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false, // NOT NULL
         autoIncrement: true, // AUTO_INCREMENT
         primaryKey: true, // Primary Key (기본키)
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
       },
       nickname: {
         allowNull: false, // NOT NULL

@@ -21,7 +21,9 @@ router.post('/posts', authMiddleware, async (req, res) => {
 
 // 게시글 조회 API
 router.get('/posts', async (req, res) => {
-  const dataAll = await Posts.find({}).sort('-createdAt'); // createdAt 내림차순
+  const dataAll = await Posts.findAll({
+    order : [['createdAt', 'DESC']]
+  }); 
 
   res.status(200).json({ data: dataAll }); // 넣기
 });
@@ -29,7 +31,7 @@ router.get('/posts', async (req, res) => {
 // 게시글 상세 조회 API
 router.get('/posts/:postId', async (req, res) => {
   const { postId } = req.params;
-  const currentPost = await Posts.findOne({ _id: postId });
+  const currentPost = await Posts.findByPk(postId);
   console.log(currentPost);
   // 게시글이 없을때
   if (!currentPost) {
@@ -47,7 +49,7 @@ router.put('/posts/:postId', authMiddleware, async (req, res) => {
   const { title, content } = req.body;
   const user = res.locals.user;
 
-  const currentPost = await Posts.findOne({ _id: postId });
+  const currentPost = await Posts.findByPk(postId);
 
   try {
     // 데이터 형식이 올바르지 않음
@@ -85,9 +87,9 @@ router.put('/posts/:postId', authMiddleware, async (req, res) => {
     }
 
     // 수정할 게시글의 제목, 내용, 업데이트 날짜 수정
-    await Posts.updateOne(
-      { _id: postId },
-      { $set: { title, content, updatedAt: new Date() } },
+    await Posts.update(
+      { title: title, content: content },
+      { where: { postId, userId : user.userId } },
     );
 
     // 게시글 수정
@@ -114,9 +116,9 @@ router.put('/posts/:postId', authMiddleware, async (req, res) => {
 // 게시글 삭제 API
 router.delete('/posts/:postId', authMiddleware, async (req, res) => {
   const { postId } = req.params;
-  const user = req.locals.user;
+  const user = res.locals.user;
 
-  const currentPost = await Posts.findOne({ _id: postId });
+  const currentPost = await Posts.findByPk(postId);
 
   try {
     // 게시글이 존재하지 않는 경우
@@ -134,7 +136,9 @@ router.delete('/posts/:postId', authMiddleware, async (req, res) => {
       return;
     }
     // 삭제할 게시글 조회
-    await Posts.deleteOne({ _id: postId });
+    await Posts.destroy({
+      where: {postId},
+    });
     // 게시글 삭제
     if (currentPost) {
       res.status(200).json({ message: '게시글을 삭제하였습니다.' });
