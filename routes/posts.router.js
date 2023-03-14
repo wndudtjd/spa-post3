@@ -17,7 +17,7 @@ router.post('/posts', authMiddleware, async (req, res) => {
   });
 
   res.status(201).json({ message: '게시글이 작성에 성공하였습니다.' });
-});
+});98
 
 // 게시글 조회 API
 router.get('/posts', async (req, res) => {

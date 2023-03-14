@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { Users } = require('../models');
@@ -17,7 +18,7 @@ router.post('/login', async (req, res) => {
     return;
   }
 
-  const token = jwt.sign({ userId: user.userId }, 'my-secret-key');
+  const token = jwt.sign({ userId: user.userId }, process.env.PRIVATE_KEY);
 
   res.cookie('authorization', `Bearer ${token}`); // jwt를 cookie로 할당
   res.status(200).json({
